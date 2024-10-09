@@ -5,7 +5,7 @@ import "testing"
 // Test for Create method
 func TestTodoService_Create(t *testing.T) {
 	mockStorage := &TodoStorageInMemory{}
-	service := NewTaskService(mockStorage)
+	service := NewTodoService(mockStorage)
 
 	todo := Todo{ID: 1, Title: "Test Todo", Status: TodoState}
 
@@ -21,12 +21,19 @@ func TestTodoService_Create(t *testing.T) {
 	if mockStorage.todos[0] != todo {
 		t.Fatalf("expected todo %v, got %v", todo, mockStorage.todos[0])
 	}
+
+	// Test for the title length validation
+	todo = Todo{ID: 2, Title: "Test", Status: TodoState}
+	err = service.Create(todo)
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
 }
 
 // Test for Update method
 func TestTodoService_Update(t *testing.T) {
 	mockStorage := &TodoStorageInMemory{todos: []Todo{{ID: 1, Title: "Old Todo", Status: TodoState}}}
-	service := NewTaskService(mockStorage)
+	service := NewTodoService(mockStorage)
 
 	updatedTodo := Todo{ID: 1, Title: "Updated Todo", Status: DoingState}
 
@@ -43,7 +50,7 @@ func TestTodoService_Update(t *testing.T) {
 // Test for Delete method
 func TestTodoService_Delete(t *testing.T) {
 	mockStorage := &TodoStorageInMemory{todos: []Todo{{ID: 1, Title: "Test Todo", Status: TodoState}}}
-	service := NewTaskService(mockStorage)
+	service := NewTodoService(mockStorage)
 
 	err := service.Delete(1)
 	if err != nil {
@@ -61,7 +68,7 @@ func TestTodoService_List(t *testing.T) {
 		{ID: 1, Title: "Todo 1", Status: TodoState},
 		{ID: 2, Title: "Todo 2", Status: DoingState},
 	}}
-	service := NewTaskService(mockStorage)
+	service := NewTodoService(mockStorage)
 
 	todos, err := service.List()
 	if err != nil {
